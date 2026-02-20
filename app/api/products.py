@@ -72,10 +72,7 @@ def list_products(
             detail={"status": False, "message": "Database error"}
         )
     
-# ============================
 # Update Product (Admin Only)
-# ============================
-
 @router.patch("/{product_id}", status_code=status.HTTP_200_OK)
 def update_product(
     product_id: int,
