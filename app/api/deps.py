@@ -5,7 +5,7 @@ from app.db.database import SessionLocal
 from app.models.user import User
 from app.core.security import SECRET_KEY, ALGORITHM
 
-# 👇 This replaces OAuth2PasswordBearer
+
 security = HTTPBearer()
 
 

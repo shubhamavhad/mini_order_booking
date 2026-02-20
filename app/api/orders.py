@@ -12,10 +12,8 @@ from app.models.order import Order
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 
-# ============================
-# CREATE ORDER
-# ============================
 
+# CREATE ORDER
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def place_order(
     order: OrderCreate,
@@ -42,10 +40,7 @@ def place_order(
         )
 
 
-# ============================
 # LIST ORDERS (Pagination + Filter)
-# ============================
-
 @router.get("/", status_code=status.HTTP_200_OK)
 def list_orders(
     status: str = Query(None),
@@ -88,10 +83,7 @@ def list_orders(
         )
 
 
-# ============================
 # CONFIRM ORDER (Admin Only)
-# ============================
-
 @router.patch("/{order_id}/confirm", status_code=status.HTTP_200_OK)
 def confirm(
     order_id: int,
@@ -121,10 +113,7 @@ def confirm(
         )
 
 
-# ============================
 # CANCEL ORDER (Customer/Admin)
-# ============================
-
 @router.patch("/{order_id}/cancel", status_code=status.HTTP_200_OK)
 def cancel(
     order_id: int,
