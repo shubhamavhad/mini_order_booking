@@ -1,0 +1,222 @@
+# 🚀 Mini Order System
+
+A minimal Order Management microservice built with **FastAPI**, supporting authentication, role-based access, product management, order lifecycle management, pagination, filtering, and concurrency-safe stock handling.
+
+---
+
+## ✨ Features
+
+- JWT Authentication
+- Role-Based Access (Admin / Customer)
+- Product Management (CRUD)
+- Order Lifecycle (PENDING → CONFIRMED → CANCELLED)
+- Stock Validation
+- Concurrency Handling (Prevents Overselling)
+- Pagination & Filtering
+- SQLite (Development DB)
+- Docker Support
+- Clean Modular Architecture
+
+---
+
+## 🛠 Prerequisites
+
+- Python 3.10+
+- `uv` (Python package manager)
+- Optional: Docker
+
+---
+
+## ⚡ Setup & Run (Using uv)
+
+### 1️⃣ Install uv (if not installed)
+
+**Windows (PowerShell)**
+
+```powershell
+pip install uv
+```
+
+OR
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+**Mac / Linux**
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Verify:
+
+```bash
+uv --version
+```
+
+---
+
+### 2️⃣ Install Dependencies
+
+```bash
+uv sync
+```
+
+---
+
+### 3️⃣ Run Application
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+Production mode:
+
+```bash
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+```
+
+---
+
+## 📘 API Documentation
+
+Open Swagger UI:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+---
+
+# 🔐 API Execution Flow
+
+## 1️⃣ Register Users
+
+```
+POST /register
+```
+
+Admin:
+```json
+{
+  "username": "admin1",
+  "password": "1234",
+  "role": "admin"
+}
+```
+
+Customer:
+```json
+{
+  "username": "customer1",
+  "password": "1234",
+  "role": "customer"
+}
+```
+
+---
+
+## 2️⃣ Login
+
+```
+POST /login
+```
+
+Use returned token in Swagger:
+
+```
+Bearer YOUR_TOKEN
+```
+
+---
+
+## 3️⃣ Create Product (Admin Only)
+
+```
+POST /products
+```
+
+---
+
+## 4️⃣ List Products
+
+```
+GET /products?page=1&limit=10
+```
+
+---
+
+## 5️⃣ Place Order (Customer)
+
+```
+POST /orders
+```
+
+---
+
+## 6️⃣ Confirm Order (Admin)
+
+```
+PATCH /orders/{order_id}/confirm
+```
+
+---
+
+## 7️⃣ Cancel Order
+
+```
+PATCH /orders/{order_id}/cancel
+```
+
+---
+
+# 🔒 Concurrency Handling
+
+Concurrency is handled using:
+
+```
+.with_for_update()
+```
+
+Inside a database transaction.
+
+### How It Works:
+
+- First request locks product row
+- Stock is validated and reduced
+- Transaction commits
+- Second request waits for lock release
+- Second request reads updated stock
+- If insufficient → order fails
+
+This prevents overselling.
+
+---
+
+# 🏗 Architecture Overview
+
+```
+Client → API Router → Service Layer → Database
+```
+
+### Project Structure
+
+```
+app/
+├── api/        # Routers
+├── core/       # Security
+├── db/         # DB config
+├── models/     # ORM models
+├── schemas/    # Pydantic schemas
+├── services/   # Business logic
+├── main.py     # Entry point
+```
+
+---
+
+# 📦 Assumptions
+
+- SQLite used for development.
+- Replace with PostgreSQL for production.
+- Background jobs should use a task queue in production.
